@@ -26,11 +26,28 @@ function get_student_data($students){
   return $studentdata;
 }
 
+function get_current_activities(){
+  global $DB, $USER;
+  $dbman = $DB->get_manager();
+  if($dbman->table_exists('local_apprenticeactivities')){
+    $activities = $DB->get_records_sql('SELECT *
+                                    FROM {local_apprenticeactivities}
+                                    WHERE status = ?',
+                                    array(1));
+    return $activities;
+  }else{
+    return false;
+  }
+}
+
 function is_updating($student, $studentdata){
   if(!empty($studentdata)){
-    foreach($studentdata as $s => $d){
-      return $d->studentid == $student ? 1 : 0;
+     foreach($studentdata as $s => $d){
+      if(in_array($student, get_object_vars($d))){
+        return 1;
+      }
     }
+    return 0;
   }else{
     return 0;
   }
@@ -58,16 +75,27 @@ function save_hours($formdata){
       $dataobject->staffid = $USER->id;
       $dataobject->activityid = $data[1];
       $dataobject->hours = $v;
-      $date = new DateTime("now", core_date::get_user_timezone_object());
-      $date->setTime(0, 0, 0);
-      $dataobject->timecreated = $date->getTimestamp();
 
       if($update == 0){
+        $date = new DateTime("now", core_date::get_user_timezone_object());
+        $date->setTime(0, 0, 0);
+        $dataobject->timecreated = $date->getTimestamp();
+
         $result = $DB->insert_record('report_apprentice', $dataobject, true, false);
       }elseif($update == 1){
-        $id = $DB->get_field('report_apprentice', 'id', array('studentid'=>$dataobject->studentid, 'activityid'=>$dataobject->activityid));
-        $dataobject->id = $id;
-        $result = $DB->update_record('report_apprentice', $dataobject, false);
+        //Get record being updated
+        $id = $DB->get_record_sql('SELECT id FROM {report_apprentice} WHERE studentid = ? AND activityid = ? AND hours != ?'
+                                  , array($dataobject->studentid, $dataobject->activityid,  $dataobject->hours));
+        var_dump($id);
+        //Check if hours have changed
+        if($id){
+          $date = new DateTime("now", core_date::get_user_timezone_object());
+          $date->setTime(0, 0, 0);
+          $dataobject->timemodified = $date->getTimestamp();
+          $dataobject->id = $id;
+          var_dump($dataobject);
+          $result = $DB->update_record('report_apprentice', $dataobject, false);
+        }
       }
     }
   }

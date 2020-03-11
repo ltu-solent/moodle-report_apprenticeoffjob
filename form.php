@@ -9,20 +9,18 @@ class offjobhours extends moodleform {
 		$mform = $this->_form;
     $students = get_students($this->_customdata['courseid']);
     $studentdata = get_student_data($students);
+		$activities = get_current_activities();
 
-    foreach($students as $student => $v){
-				$edit = is_updating($v->id, $studentdata);
-	      $hoursarray=array();
-	      $hoursarray[] =& $mform->createElement('text', $v->id . '_1_' . $edit, $v->id . '_1', $attributes='size="10"');
-	      $hoursarray[] =& $mform->createElement('text', $v->id . '_2_' . $edit, $v->id . '_2', $attributes='size="10"');
-	      $hoursarray[] =& $mform->createElement('text', $v->id . '_3_' . $edit, $v->id . '_3', $attributes='size="10"');
-	      $hoursarray[] =& $mform->createElement('text', $v->id . '_4_' . $edit, $v->id . '_4', $attributes='size="10"');
-	      $hoursarray[] =& $mform->createElement('text', $v->id . '_5_' . $edit, $v->id . '_5', $attributes='size="10"');
+    foreach($students as $student => $value){
+				$edit = is_updating($value->id, $studentdata);
+				$studentdetails = $value->firstname . ' ' . $value->lastname;
 
-      // add a group of inputs for each student's hours
-      $studentdetails = $v->firstname . ' ' . $v->lastname;
-      $group = $mform->createElement('group', 'hours', $studentdetails, $hoursarray, null, false);
-      $mform->addElement($group);
+				$mform->addElement('html', '<h3>' . $studentdetails. '</h3><br />');
+				foreach($activities as $a => $v){
+					$mform->addElement('text', $value->id . '_' . $v->id . '_' . $edit, $v->activityname, $attributes='size="10"');
+				}
+
+			//$mform->addElement('filemanager', 'files_filemanager', 'Commitment statement', null, array('maxbytes' => 41943040, 'maxfiles' => 1));
     }
 
     $mform->addElement('hidden', 'id', $this->_customdata['courseid']);
