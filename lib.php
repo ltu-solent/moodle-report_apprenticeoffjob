@@ -7,6 +7,7 @@ function report_apprenticeoffjob_extend_navigation_course($navigation, $course, 
 }
 
 function get_students($courseid){
+  // Get the students enrolled on the course
   global $DB;
   $students = get_role_users(5, context_course::instance($courseid), false, 'u.id, u.firstname, u.lastname');
 
@@ -14,6 +15,7 @@ function get_students($courseid){
 }
 
 function get_student_data($students){
+  // Get all the data held for specified student ids
   global $DB;
   $studentids = [];
   foreach($students as $k => $v){
@@ -27,6 +29,7 @@ function get_student_data($students){
 }
 
 function get_current_activities(){
+  // Get options students can currently use for logging activities
   global $DB, $USER;
   $dbman = $DB->get_manager();
   if($dbman->table_exists('local_apprenticeactivities')){
@@ -41,6 +44,7 @@ function get_current_activities(){
 }
 
 function is_updating($student, $studentdata){
+  // Check if the teacher has entered any hours for the students
   if(!empty($studentdata)){
      foreach($studentdata as $s => $d){
       if(in_array($student, get_object_vars($d))){
@@ -53,21 +57,23 @@ function is_updating($student, $studentdata){
   }
 }
 
-function form_data (){
-  $formdata = array('id' => $activity->id,
-                    'activitytype' => $activity->activitytype,
-                    'activitydate' => $activity->activitydate,
-                    'activitydetails' => $activity->activitydetails,
-                    'activityhours' => $activity->activityhours,
-                    'activityupdate' => 1
-                    );
-}
+// function form_data (){
+//
+//   $formdata = array('id' => $activity->id,
+//                     'activitytype' => $activity->activitytype,
+//                     'activitydate' => $activity->activitydate,
+//                     'activitydetails' => $activity->activitydetails,
+//                     'activityhours' => $activity->activityhours,
+//                     'activityupdate' => 1
+//                     );
+// }
 
 function save_hours($formdata){
+  // Save hours entered by the teacher
   global $USER, $DB;
   foreach($formdata as $k=>$v){
     if($k != 'id' && $k != 'submitbutton'){
-      //create data array
+      // Create base dataobject
       $data = explode("_", $k);
       $update = $data[2];
       $dataobject = new stdClass();
@@ -77,23 +83,21 @@ function save_hours($formdata){
       $dataobject->hours = $v;
 
       if($update == 0){
+        // If updating, insert a new record and updated timecreated
         $date = new DateTime("now", core_date::get_user_timezone_object());
         $date->setTime(0, 0, 0);
         $dataobject->timecreated = $date->getTimestamp();
-
         $result = $DB->insert_record('report_apprentice', $dataobject, true, false);
       }elseif($update == 1){
         //Get record being updated
         $id = $DB->get_record_sql('SELECT id FROM {report_apprentice} WHERE studentid = ? AND activityid = ? AND hours != ?'
                                   , array($dataobject->studentid, $dataobject->activityid,  $dataobject->hours));
-        var_dump($id);
         //Check if hours have changed
         if($id){
           $date = new DateTime("now", core_date::get_user_timezone_object());
           $date->setTime(0, 0, 0);
           $dataobject->timemodified = $date->getTimestamp();
-          $dataobject->id = $id;
-          var_dump($dataobject);
+          $dataobject->id = $id->id;
           $result = $DB->update_record('report_apprentice', $dataobject, false);
         }
       }
