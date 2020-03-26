@@ -57,17 +57,6 @@ function is_updating($student, $studentdata){
   }
 }
 
-// function form_data (){
-//
-//   $formdata = array('id' => $activity->id,
-//                     'activitytype' => $activity->activitytype,
-//                     'activitydate' => $activity->activitydate,
-//                     'activitydetails' => $activity->activitydetails,
-//                     'activityhours' => $activity->activityhours,
-//                     'activityupdate' => 1
-//                     );
-// }
-
 function save_hours($formdata){
   // Save hours entered by the teacher
   global $USER, $DB;
@@ -101,6 +90,50 @@ function save_hours($formdata){
           $result = $DB->update_record('report_apprentice', $dataobject, false);
         }
       }
+    }
+  }
+}
+
+function display_table($course){
+  // Should I be using current activities or activities used for the students?
+  $activities = get_current_activities();
+  $students = get_students($course);
+  $studentdata = get_student_data($students);
+//var_dump($studentdata);
+  $headings = array();
+  $headings[] = 'Student';
+  foreach($activities as $activity=>$a){
+    $headings[] = $a->activityname;
+  }
+  $headings[] = 'Edit';
+  $table = new html_table();
+	$table->attributes['class'] = 'generaltable boxaligncenter';
+	$table->id = 'apprenticeoffjob';
+	$table->cellpadding = 5;
+	$table->head = $headings;
+
+  //Student data
+  foreach($students as $student=>$s){
+    $row = new html_table_row();
+    $cells = array();
+    $cells[] = new html_table_cell($s->firstname . ' ' . $s->lastname);
+    foreach($activities as $activity=>$a){
+      $cell = new html_table_cell(match_activity($activity, $s->id, $studentdata));
+      $cell->id = $activity;
+      $cells[] = $cell;
+    }
+    $cells[] = new html_table_cell('Edit');
+    $row->cells = $cells;
+    $table->data[] = $row;
+  }
+
+  return $table;
+}
+
+function match_activity($activity, $student, $studentdata){
+  foreach($studentdata as $s=>$d){
+    if($d->studentid == $student && $d->activityid == $activity){
+      return $d->hours;
     }
   }
 }

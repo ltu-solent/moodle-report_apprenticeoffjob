@@ -45,7 +45,14 @@ $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 // Displaying the page.
 echo $OUTPUT->header();
 
-$table = display_table($course->id);
-echo html_writer::table($table);
+$hoursform = new offjobhours(null, array('courseid' => $course->id));
+if ($hoursform->is_cancelled()) {
+  redirect($CFG->wwwroot. '/local/apprenticeoffjob/index.php');
+} else if ($formdata = $hoursform->get_data()) {
+  $savehours = save_hours($formdata);
+  redirect(new moodle_url('/report/apprenticeoffjob/index.php', ['id'=>$id]), get_string('activitysaved', 'local_apprenticeoffjob'), 15);
+}
+
+$hoursform->display();
 
 echo $OUTPUT->footer();
