@@ -26,7 +26,10 @@
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once('form.php');
 
-$id = required_param('id', PARAM_INT);
+$id = optional_param('id', '', PARAM_INT);
+$courseid = optional_param('courseid', '', PARAM_INT);
+$id = ($id ? $id : $courseid);
+
 $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 
 $PAGE->set_url('/report/apprenticeoffjob/index.php', array('id'=>$id));

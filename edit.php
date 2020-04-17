@@ -25,19 +25,19 @@
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once('form.php');
+global $COURSE;
 
-$id = required_param('id', PARAM_INT);
-$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+$studentid = required_param('studentid', PARAM_INT);
+$courseid = required_param('courseid', PARAM_INT);
 
-$PAGE->set_url('/report/apprenticeoffjob/index.php', array('id'=>$id));
+$PAGE->set_url('/report/apprenticeoffjob/edit.php', array('studentid'=>$studentid));
 $PAGE->set_pagelayout('report');
 
-require_login($course);
+require_login($courseid);
 
 // Check permissions.
-$coursecontext = context_course::instance($course->id);
+$coursecontext = context_course::instance($courseid);
 require_capability('report/apprenticeoffjob:view', $coursecontext);
-
 // Set page title and page heading.
 $PAGE->set_title($course->shortname .': '. get_string('pluginname' , 'report_apprenticeoffjob'));
 $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
@@ -45,12 +45,14 @@ $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 // Displaying the page.
 echo $OUTPUT->header();
 
-$hoursform = new offjobhours(null, array('courseid' => $course->id));
+//$entry = file_prepare_standard_filemanager($entry, 'attachment', $attachmentoptions, $context, 'mod_glossary', 'attachment', $entry->id);
+
+$hoursform = new offjobhours(null, array('studentid' => $studentid, 'courseid' => $courseid,));
 if ($hoursform->is_cancelled()) {
-  redirect($CFG->wwwroot. '/local/apprenticeoffjob/index.php');
+  redirect($CFG->wwwroot . '/report/apprenticeoffjob/index.php?id=' . $courseid);
 } else if ($formdata = $hoursform->get_data()) {
   $savehours = save_hours($formdata);
-  redirect(new moodle_url('/report/apprenticeoffjob/index.php', ['id'=>$id]), get_string('activitysaved', 'local_apprenticeoffjob'), 15);
+  redirect(new moodle_url('/report/apprenticeoffjob/index.php', ['courseid'=>$courseid]), get_string('hourssaved', 'report_apprenticeoffjob'), 15);
 }
 
 $hoursform->display();

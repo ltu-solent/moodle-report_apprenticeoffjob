@@ -6,25 +6,41 @@ function report_apprenticeoffjob_extend_navigation_course($navigation, $course, 
     }
 }
 
+function get_student($studentid){
+  // Get one student ID
+  global $DB;
+  $student = $DB->get_record('user',(['id'=>$studentid]), 'id, firstname, lastname');
+  return $student;
+}
+
 function get_students($courseid){
-  // Get the students enrolled on the course
+  // Get the students IDs enrolled on the course
   global $DB;
   $students = get_role_users(5, context_course::instance($courseid), false, 'u.id, u.firstname, u.lastname');
-
   return $students;
 }
 
 function get_student_data($students){
-  // Get all the data held for specified student ids
   global $DB;
-  $studentids = [];
-  foreach($students as $k => $v){
-    $studentids[] = $v->id;
+  // Get all the data held for specified student ids
+  if(count($students) != 1){
+    $studentids = [];
+    foreach($students as $k => $v){
+      $studentids[] = $v->id;
+    }
+    $studentids = implode(",",$studentids);
+  }else{
+    $studentids = $students;
   }
-  $studentids = implode(",",$studentids);
-  $studentdata = $DB->get_records_sql("SELECT *
-                                      FROM {report_apprentice}
-                                      WHERE studentid IN ($studentids)");
+
+  list($inorequalsql, $params) = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
+  $sql = "SELECT RAND() id, u.id userid, u.firstname, u.lastname,
+           ra.studentid, ra.staffid, ra.activityid, ra.hours
+           FROM {user} u
+           LEFT JOIN {report_apprentice} ra ON ra.studentid = u.id
+           WHERE u.id $inorequalsql ";
+  $studentdata = $DB->get_records_sql($sql, $params);
+
   return $studentdata;
 }
 
@@ -61,28 +77,26 @@ function save_hours($formdata){
   // Save hours entered by the teacher
   global $USER, $DB;
   foreach($formdata as $k=>$v){
-    if($k != 'id' && $k != 'submitbutton'){
-      // Create base dataobject
-      $data = explode("_", $k);
-      $update = $data[2];
+    if(strpos($k, 'activity_') !== false){
       $dataobject = new stdClass();
-      $dataobject->studentid = $data[0];
+      $dataobject->studentid = $formdata->studentid;
       $dataobject->staffid = $USER->id;
-      $dataobject->activityid = $data[1];
-      $dataobject->hours = $v;
 
-      if($update == 0){
-        // If updating, insert a new record and updated timecreated
-        $date = new DateTime("now", core_date::get_user_timezone_object());
-        $date->setTime(0, 0, 0);
-        $dataobject->timecreated = $date->getTimestamp();
-        $result = $DB->insert_record('report_apprentice', $dataobject, true, false);
-      }elseif($update == 1){
-        //Get record being updated
-        $id = $DB->get_record_sql('SELECT id FROM {report_apprentice} WHERE studentid = ? AND activityid = ? AND hours != ?'
+      if(strpos($k, 'filemanager') === false){
+        $data = explode("_", $k);
+        $dataobject->activityid = $data[1];
+        $dataobject->hours = $v;
+        $id = $DB->get_record_sql('SELECT id FROM {report_apprentice} WHERE studentid = ? AND activityid = ? AND hours = ?'
                                   , array($dataobject->studentid, $dataobject->activityid,  $dataobject->hours));
-        //Check if hours have changed
-        if($id){
+
+        if(!$id){
+          // If inserting - timecreated
+          $date = new DateTime("now", core_date::get_user_timezone_object());
+          $date->setTime(0, 0, 0);
+          $dataobject->timecreated = $date->getTimestamp();
+          $result = $DB->insert_record('report_apprentice', $dataobject, true, false);
+        }else{
+          //Get record being updated
           $date = new DateTime("now", core_date::get_user_timezone_object());
           $date->setTime(0, 0, 0);
           $dataobject->timemodified = $date->getTimestamp();
@@ -99,13 +113,14 @@ function display_table($course){
   $activities = get_current_activities();
   $students = get_students($course);
   $studentdata = get_student_data($students);
-//var_dump($studentdata);
+  //var_dump($students);
+
   $headings = array();
   $headings[] = 'Student';
   foreach($activities as $activity=>$a){
     $headings[] = $a->activityname;
   }
-  $headings[] = 'Edit';
+  $headings[] = '';
   $table = new html_table();
 	$table->attributes['class'] = 'generaltable boxaligncenter';
 	$table->id = 'apprenticeoffjob';
@@ -113,16 +128,23 @@ function display_table($course){
 	$table->head = $headings;
 
   //Student data
-  foreach($students as $student=>$s){
+  foreach($students as $st=>$v){
     $row = new html_table_row();
     $cells = array();
-    $cells[] = new html_table_cell($s->firstname . ' ' . $s->lastname);
+    $cells[] = new html_table_cell($v->firstname . ' ' . $v->lastname);
+
     foreach($activities as $activity=>$a){
-      $cell = new html_table_cell(match_activity($activity, $s->id, $studentdata));
+      $cell = new html_table_cell(match_activity($activity, $st, $studentdata));
       $cell->id = $activity;
       $cells[] = $cell;
     }
-    $cells[] = new html_table_cell('Edit');
+
+    $params = ['studentid'=> $v->id, 'courseid'=> $course];
+    $editurl = new moodle_url('/report/apprenticeoffjob/edit.php', $params);
+    $editbutton = html_writer::start_tag('a', array('href'=>$editurl, 'class' => 'btn btn-secondary'));
+    $editbutton .= get_string('reportedithours', 'report_apprenticeoffjob');
+    $editbutton .= html_writer::end_tag('a');
+    $cells[] = new html_table_cell($editbutton);
     $row->cells = $cells;
     $table->data[] = $row;
   }
@@ -132,7 +154,7 @@ function display_table($course){
 
 function match_activity($activity, $student, $studentdata){
   foreach($studentdata as $s=>$d){
-    if($d->studentid == $student && $d->activityid == $activity){
+    if($d->userid == $student && $d->activityid == $activity){
       return $d->hours;
     }
   }
