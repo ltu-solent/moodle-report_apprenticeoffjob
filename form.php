@@ -5,8 +5,7 @@ require_once('lib.php');
 
 class offjobhours extends moodleform {
 	public function definition() {
-		global $USER, $DB, $CFG, $OUTPUT;
-
+		global $DB;
 		$mform = $this->_form;
     $student = get_student($this->_customdata['studentid']);
     $studentdata = get_student_data($student->id);
@@ -21,7 +20,8 @@ class offjobhours extends moodleform {
 	    $mform->setType('activity_'.$a->id, PARAM_FLOAT);
 			$mform->addRule('activity_'.$a->id, get_string('error'), 'numeric', 'client');
 		}
-		$mform->addElement('filemanager', 'activity_filemanager', 'Commitment statement', null, array('maxbytes' => 41943040, 'maxfiles' => 1));
+		$fileoptions = array('maxbytes' => 41943040, 'maxfiles' => 1);
+		$mform->addElement('filemanager', 'activity_filemanager', 'Commitment statement', null, $fileoptions);
 
     $mform->addElement('hidden', 'studentid', $this->_customdata['studentid']);
     $mform->setType('studentid', PARAM_INT);
@@ -34,5 +34,19 @@ class offjobhours extends moodleform {
 			$formdata['activity_'. $d->activityid] = $d->hours;
 			$this->set_data($formdata);
 		}
+
+		$attachment = $DB->get_record('report_apprentice',(['studentid'=>$this->_customdata['studentid'],'activityid'=>0]));
+		$entry = $DB->get_record('files',(['contextid'=>$this->_customdata['studentid'],'component'=>'report_apprenticeoffjob','filearea'=>'attachment','itemid'=>$attachment->id]));
+
+		$data = new stdClass();
+		$fileoptions = array('maxbytes' => 41943040, 'maxfiles' => 1);
+		$data = file_prepare_standard_filemanager($entry->id,
+		                                          'files',
+		                                          $fileoptions,
+		                                          $student,
+		                                          'report_apprenticeoffjob',
+		                                          'attachment', $entry->id);
+		var_dump($data);
+		$this->set_data($data);
 	}
 }
