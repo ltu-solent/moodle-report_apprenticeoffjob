@@ -105,9 +105,9 @@ function save_hours($formdata){
         }
       }else{
         $attachment = $DB->get_record('report_apprentice',(['studentid'=>$formdata->studentid, 'attachment'=>1]));
-var_dump($attachment);
         if(!$attachment){
-          $entry = file_save_draft_area_files($formdata->activity_filemanager, $formdata->studentid, 'report_apprenticeoffjob', 'attachment',
+          $usercontext = context_user::instance($formdata->studentid);
+          $entry = file_save_draft_area_files($formdata->activity_filemanager, $usercontext->id, 'report_apprenticeoffjob', 'attachment',
                            $formdata->activity_filemanager, array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => 50));
           $dataobject = new stdClass();
           $dataobject->studentid = $formdata->studentid;

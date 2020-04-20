@@ -37,8 +37,7 @@ class offjobhours extends moodleform {
 
 		$attachment = $DB->get_record('report_apprentice',(['studentid'=>$this->_customdata['studentid'],'attachment'=>1]));
 		$entry = $DB->get_record('files',(['contextid'=>$this->_customdata['studentid'],'component'=>'report_apprenticeoffjob','filearea'=>'attachment','itemid'=>$attachment->id]));
-var_dump($attachment);
-var_dump($entry);
+
 		$fileoptions = array('maxbytes' => 41943040, 'maxfiles' => 1);
 		if($entry->id){
 			$entryid = $entry->id;
@@ -46,36 +45,8 @@ var_dump($entry);
 			$entryid = 0;
 		}
 
-		// $data = file_prepare_standard_filemanager($entry->id,
-		//
-		// 																					'files',
-		// 																					$fileoptions,
-		// 																					$student,
-		// 																					'report_apprenticeoffjob',
-		// 																					'attachment', $entry->id);
-
- 				//file_prepare_draft_area(0, 164470, mod_folder, content, 0, $options);
-			$data = file_prepare_standard_filemanager($entryid, 'activity', $fileoptions, null, 'report_apprenticeoffjob', 'attachment', $entry->itemid);
-			// $draftitemid = file_get_submitted_draft_itemid('files');
-			// $file = file_prepare_draft_area(0, $entry->contextid, $entry->component, 'attachment', 0,
-			//                         $fileoptions);
-
-//var_dump($file);
-			// $entry->attachments = $draftitemid;
-			//
-			// $formdata = array();
-			// $formdata->;
-			 //$this->set_data($data);
-		// }else{
-		// 	//$data = new stdClass();
-		// 	$data = file_prepare_standard_filemanager($entry->id,
-		// 	                                          'files',
-		// 	                                          $fileoptions,
-		// 	                                          $student,
-		// 	                                          'report_apprenticeoffjob',
-		// 	                                          'attachment', $entry->id);
-		// }
-
+		$usercontext = context_user::instance($this->_customdata['studentid']);
+		$data = file_prepare_standard_filemanager($entryid, 'files', $fileoptions, $usercontext->id, 'report_apprenticeoffjob', 'attachment', $entry->itemid);
 
 		$this->set_data($data);
 	}
