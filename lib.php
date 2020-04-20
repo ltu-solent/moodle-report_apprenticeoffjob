@@ -103,21 +103,25 @@ function save_hours($formdata){
           $dataobject->id = $id->id;
           $result = $DB->update_record('report_apprentice', $dataobject, false);
         }
+      }else{
+        $attachment = $DB->get_record('report_apprentice',(['studentid'=>$formdata->studentid, 'attachment'=>1]));
+var_dump($attachment);
+        if(!$attachment){
+          $entry = file_save_draft_area_files($formdata->activity_filemanager, $formdata->studentid, 'report_apprenticeoffjob', 'attachment',
+                           $formdata->activity_filemanager, array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => 50));
+          $dataobject = new stdClass();
+          $dataobject->studentid = $formdata->studentid;
+          $dataobject->staffid = $USER->id;
+          $dataobject->activityid = $formdata->activity_filemanager;
+          $dataobject->attachment = 1;
+          $dataobject->hours = 0;
+          $date = new DateTime("now", core_date::get_user_timezone_object());
+          $date->setTime(0, 0, 0);
+          $dataobject->timecreated = $date->getTimestamp();
+          $entry = $DB->insert_record('report_apprentice', $dataobject, true, false);
+        }
       }
     }
-
-    $entry = file_save_draft_area_files($formdata->activity_filemanager, $formdata->studentid, 'report_apprenticeoffjob', 'attachment',
-                     $formdata->activity_filemanager, array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => 50));
-    $dataobject = new stdClass();
-    $dataobject->studentid = $formdata->studentid;
-    $dataobject->staffid = $USER->id;
-    $dataobject->activityid = $formdata->activity_filemanager;
-    $dataobject->attachment = 1;
-    $dataobject->hours = 0;
-    $date = new DateTime("now", core_date::get_user_timezone_object());
-    $date->setTime(0, 0, 0);
-    $dataobject->timecreated = $date->getTimestamp();
-    $entry = $DB->insert_record('report_apprentice', $dataobject, true, false);
   }
 }
 
