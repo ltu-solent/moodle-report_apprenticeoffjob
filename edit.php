@@ -45,16 +45,23 @@ $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 // Displaying the page.
 echo $OUTPUT->header();
 
-//$entry = file_prepare_standard_filemanager($entry, 'attachment', $attachmentoptions, $context, 'mod_glossary', 'attachment', $entry->id);
+$fileoptions = array('maxbytes' => 41943040, 'maxfiles' => 1);
+$data = new stdClass();
+$data = file_prepare_standard_filemanager($data, 'apprenticeoffjob',
+        $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0); // 0 is the item id.
 
-$hoursform = new offjobhours(null, array('studentid' => $studentid, 'courseid' => $courseid,));
+
+$hoursform = new offjobhours(null, array('studentid' => $studentid, 'courseid' => $courseid));
 if ($hoursform->is_cancelled()) {
   redirect($CFG->wwwroot . '/report/apprenticeoffjob/index.php?id=' . $courseid);
 } else if ($formdata = $hoursform->get_data()) {
   $savehours = save_hours($formdata);
+  $data = file_postupdate_standard_filemanager($data, 'apprenticeoffjob',
+          $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0);
   redirect(new moodle_url('/report/apprenticeoffjob/index.php', ['courseid'=>$courseid]), get_string('hourssaved', 'report_apprenticeoffjob'), 15);
 }
 
+$hoursform->set_data($data);
 $hoursform->display();
 
 echo $OUTPUT->footer();

@@ -28,7 +28,6 @@ function get_student_data($students){
     foreach($students as $k => $v){
       $studentids[] = $v->id;
     }
-    $studentids = implode(",",$studentids);
   }else{
     $studentids = $students;
   }
@@ -59,20 +58,6 @@ function get_current_activities(){
   }
 }
 
-function is_updating($student, $studentdata){
-  // Check if the teacher has entered any hours for the students
-  if(!empty($studentdata)){
-     foreach($studentdata as $s => $d){
-      if(in_array($student, get_object_vars($d))){
-        return 1;
-      }
-    }
-    return 0;
-  }else{
-    return 0;
-  }
-}
-
 function save_hours($formdata){
   // Save hours entered by the teacher
   global $USER, $DB;
@@ -86,8 +71,8 @@ function save_hours($formdata){
         $data = explode("_", $k);
         $dataobject->activityid = $data[1];
         $dataobject->hours = $v;
-        $id = $DB->get_record_sql('SELECT id FROM {report_apprentice} WHERE studentid = ? AND activityid = ? AND hours = ?'
-                                  , array($dataobject->studentid, $dataobject->activityid,  $dataobject->hours));
+        $id = $DB->get_record_sql('SELECT id FROM {report_apprentice} WHERE studentid = ? AND activityid = ?'
+                                  , array($dataobject->studentid, $dataobject->activityid));
 
         if(!$id){
           // If inserting - timecreated
@@ -113,7 +98,6 @@ function display_table($course){
   $activities = get_current_activities();
   $students = get_students($course);
   $studentdata = get_student_data($students);
-  //var_dump($students);
 
   $headings = array();
   $headings[] = 'Student';
@@ -159,3 +143,16 @@ function match_activity($activity, $student, $studentdata){
     }
   }
 }
+
+//https://stackoverflow.com/questions/36203770/how-to-retrieve-files-when-editing-a-file-manager-in-moodle
+// function report_apprenticeoffjob_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+//
+//     if ($context->contextlevel != CONTEXT_USER) {
+//         send_file_not_found();
+//     }
+//
+//     $fs = get_file_storage();
+//     $file = $fs->get_file($context->id, 'report_apprenticeoffjob', $filearea, $args[0], '/', $args[1]);
+//
+//     send_stored_file($file);
+// }

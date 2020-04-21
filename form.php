@@ -8,6 +8,7 @@ class offjobhours extends moodleform {
 		global $USER, $DB, $CFG, $OUTPUT;
 
 		$mform = $this->_form;
+
     $student = get_student($this->_customdata['studentid']);
     $studentdata = get_student_data($student->id);
 		$activities = get_current_activities();
@@ -18,10 +19,10 @@ class offjobhours extends moodleform {
 		$mform->addElement('html', '<h3>' . $studentdetails. '</h3><br />');
 		foreach($activities as $activity=>$a){
 			$mform->addElement('text', 'activity_'.$a->id, $a->activityname);
-	    $mform->setType('activity_'.$a->id, PARAM_FLOAT);
-			$mform->addRule('activity_'.$a->id, get_string('error'), 'numeric', 'client');
+	    $mform->setType('activity_'.$a->id, PARAM_RAW);
+			$mform->addRule('activity_'.$a->id, get_string('err_numeric', 'report_apprenticeoffjob'), 'numeric', null, 'server', 1, 0);
 		}
-		$mform->addElement('filemanager', 'activity_filemanager', 'Commitment statement', null, array('maxbytes' => 41943040, 'maxfiles' => 1));
+		$mform->addElement('filemanager', 'apprenticeoffjob_filemanager', 'Commitment statement', null, $fileoptions);
 
     $mform->addElement('hidden', 'studentid', $this->_customdata['studentid']);
     $mform->setType('studentid', PARAM_INT);
@@ -35,4 +36,18 @@ class offjobhours extends moodleform {
 			$this->set_data($formdata);
 		}
 	}
+
+	public function validation($data, $files) {
+			$errors = parent::validation($data, $files);
+
+			foreach($data as $k=>$v){
+				if(strpos($k, 'activity_') !== false){
+					if(floor($v) != $v){
+						$errors[$k] = get_string('err_numeric', 'report_apprenticeoffjob');
+					}
+				}
+			}
+
+      return $errors;
+  }
 }
