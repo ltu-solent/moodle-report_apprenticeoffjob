@@ -28,17 +28,33 @@ function get_student_data($students){
     foreach($students as $k => $v){
       $studentids[] = $v->id;
     }
-  }else{
-    $studentids = $students;
-  }
 
-  list($inorequalsql, $params) = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
-  $sql = "SELECT RAND() id, u.id userid, u.firstname, u.lastname,
-           ra.studentid, ra.staffid, ra.activityid, ra.hours
-           FROM {user} u
-           LEFT JOIN {report_apprentice} ra ON ra.studentid = u.id
-           WHERE u.id $inorequalsql ";
-  $studentdata = $DB->get_records_sql($sql, $params);
+    list($inorequalsql, $params) = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
+    $sql = "SELECT RAND() id, u.id userid, u.firstname, u.lastname,
+             ra.studentid, ra.staffid, ra.activityid, ra.hours
+             FROM {user} u
+             LEFT JOIN {report_apprentice} ra ON ra.studentid = u.id
+             WHERE u.id $inorequalsql ";
+
+
+    $studentdata = $DB->get_records_sql($sql, $params);
+
+  }else{
+
+    if(is_array($students)){
+      foreach($students as $student=>$s){
+        $studentid = $s->id;
+      }
+    }else{
+      $studentid = $students;
+    }
+
+    $studentdata = $DB->get_records_sql('SELECT RAND() id, u.id userid, u.firstname, u.lastname,
+                                         ra.studentid, ra.staffid, ra.activityid, ra.hours
+                                         FROM {user} u
+                                         LEFT JOIN {report_apprentice} ra ON ra.studentid = u.id
+                                         WHERE u.id = ? ', array($studentid));
+  }
 
   return $studentdata;
 }
@@ -104,6 +120,8 @@ function display_table($course){
   foreach($activities as $activity=>$a){
     $headings[] = $a->activityname;
   }
+  $headings[] = 'Total / Completed';
+  $headings[] = 'Commitment Statement';
   $headings[] = '';
   $table = new html_table();
 	$table->attributes['class'] = 'generaltable boxaligncenter';
@@ -115,14 +133,20 @@ function display_table($course){
   foreach($students as $st=>$v){
     $row = new html_table_row();
     $cells = array();
-    $cells[] = new html_table_cell($v->firstname . ' ' . $v->lastname);
+    $params = ['id'=> $v->id];
+    $url = new moodle_url('/local/apprenticeoffjob/index.php', $params);
+    $log = html_writer::start_tag('a', array('href'=>$url));
+    $log .= $v->firstname . ' ' . $v->lastname;
+    $log .= html_writer::end_tag('a');
+    $cells[] = new html_table_cell($log);
 
     foreach($activities as $activity=>$a){
       $cell = new html_table_cell(match_activity($activity, $st, $studentdata));
       $cell->id = $activity;
       $cells[] = $cell;
     }
-
+    $cells[] = '';
+    $cells[] = '';
     $params = ['studentid'=> $v->id, 'courseid'=> $course];
     $editurl = new moodle_url('/report/apprenticeoffjob/edit.php', $params);
     $editbutton = html_writer::start_tag('a', array('href'=>$editurl, 'class' => 'btn btn-secondary'));
@@ -144,15 +168,18 @@ function match_activity($activity, $student, $studentdata){
   }
 }
 
-//https://stackoverflow.com/questions/36203770/how-to-retrieve-files-when-editing-a-file-manager-in-moodle
-// function report_apprenticeoffjob_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
-//
-//     if ($context->contextlevel != CONTEXT_USER) {
-//         send_file_not_found();
-//     }
-//
-//     $fs = get_file_storage();
-//     $file = $fs->get_file($context->id, 'report_apprenticeoffjob', $filearea, $args[0], '/', $args[1]);
-//
-//     send_stored_file($file);
-// }
+function report_apprenticeoffjob_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+
+    if ($context->contextlevel != CONTEXT_USER) {
+        send_file_not_found();
+    }
+
+    $fs = get_file_storage();
+    $file = $fs->get_file($context->id, 'report_apprenticeoffjob', $filearea, $args[0], '/', $args[1]);
+
+    if (!$file) {
+     return false; // The file does not exist.
+    }
+
+    send_stored_file($file, 86400, 0, $forcedownload, $options);
+}
