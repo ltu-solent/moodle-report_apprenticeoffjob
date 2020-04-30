@@ -47,8 +47,9 @@ $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 
 // Displaying the page.
 echo $OUTPUT->header();
-
-$table = display_table($course->id);
-echo html_writer::table($table);
+if(has_capability('report/apprenticeoffjob:view', $coursecontext)){
+  $table = display_table($course->id);
+  echo html_writer::table($table);
+}
 
 echo $OUTPUT->footer();

@@ -20,7 +20,7 @@ class offjobhours extends moodleform {
 		foreach($activities as $activity=>$a){
 			$mform->addElement('text', 'activity_'.$a->id, $a->activityname);
 	    $mform->setType('activity_'.$a->id, PARAM_RAW);
-			$mform->addRule('activity_'.$a->id, get_string('err_numeric', 'report_apprenticeoffjob'), 'numeric', null, 'server', 1, 0);
+			$mform->addRule('activity_'.$a->id, get_string('errnumeric', 'report_apprenticeoffjob'), 'numeric', null, 'server', 1, 0);
 		}
 		$mform->addElement('filemanager', 'apprenticeoffjob_filemanager', 'Commitment statement', null, $fileoptions);
 
@@ -43,7 +43,7 @@ class offjobhours extends moodleform {
 			foreach($data as $k=>$v){
 				if(strpos($k, 'activity_') !== false){
 					if(floor($v) != $v){
-						$errors[$k] = get_string('err_numeric', 'report_apprenticeoffjob');
+						$errors[$k] = get_string('errnumeric', 'report_apprenticeoffjob');
 					}
 				}
 			}

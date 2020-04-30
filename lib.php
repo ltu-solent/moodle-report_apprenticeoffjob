@@ -110,6 +110,7 @@ function save_hours($formdata){
 }
 
 function display_table($course){
+  global $USER;
   // Should I be using current activities or activities used for the students?
   $activities = get_current_activities();
   $students = get_students($course);
@@ -133,7 +134,7 @@ function display_table($course){
   foreach($students as $st=>$v){
     $row = new html_table_row();
     $cells = array();
-    $params = ['id'=> $v->id];
+    $params = ['id'=> $v->id, 'user'=>$USER->id, 'course'=>$course];
     $url = new moodle_url('/local/apprenticeoffjob/index.php', $params);
     $log = html_writer::start_tag('a', array('href'=>$url));
     $log .= $v->firstname . ' ' . $v->lastname;

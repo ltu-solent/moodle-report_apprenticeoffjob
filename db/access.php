@@ -25,7 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-
     'report/apprenticeoffjob:view' => array(
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
@@ -34,8 +33,6 @@ $capabilities = array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
-        ),
-
-        'clonepermissionsfrom' => 'coursereport/grade:view',
-    )
+        )
+    ),
 );
