@@ -39,7 +39,7 @@ require_login($courseid);
 $coursecontext = context_course::instance($courseid);
 require_capability('report/apprenticeoffjob:view', $coursecontext);
 // Set page title and page heading.
-$PAGE->set_title($course->shortname .': '. get_string('pluginname' , 'report_apprenticeoffjob'));
+$PAGE->set_title($COURSE->shortname .': '. get_string('pluginname' , 'report_apprenticeoffjob'));
 $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 
 // Displaying the page.
@@ -51,7 +51,7 @@ $data = file_prepare_standard_filemanager($data, 'apprenticeoffjob',
         $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0); // 0 is the item id.
 
 
-$hoursform = new offjobhours(null, array('studentid' => $studentid, 'courseid' => $courseid));
+$hoursform = new offjobhours(null, array('studentid' => $studentid, 'courseid' => $courseid, 'fileoptions'=>$fileoptions));
 if ($hoursform->is_cancelled()) {
   redirect($CFG->wwwroot . '/report/apprenticeoffjob/index.php?id=' . $courseid);
 } else if ($formdata = $hoursform->get_data()) {

@@ -22,12 +22,12 @@ class offjobhours extends moodleform {
 	    $mform->setType('activity_'.$a->id, PARAM_RAW);
 			$mform->addRule('activity_'.$a->id, get_string('errnumeric', 'report_apprenticeoffjob'), 'numeric', null, 'server', 1, 0);
 		}
-		$mform->addElement('filemanager', 'apprenticeoffjob_filemanager', 'Commitment statement', null, $fileoptions);
+		$mform->addElement('filemanager', 'apprenticeoffjob_filemanager', 'Commitment statement', null, $this->_customdata['fileoptions']);
 
     $mform->addElement('hidden', 'studentid', $this->_customdata['studentid']);
     $mform->setType('studentid', PARAM_INT);
     $mform->addElement('hidden', 'courseid', $this->_customdata['courseid']);
-    $mform->setType('course', PARAM_INT);
+    $mform->setType('courseid', PARAM_INT);
     $this->add_action_buttons();
 		$formdata = array();
 
