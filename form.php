@@ -2,6 +2,7 @@
 require_once('../../config.php');
 require_once("$CFG->libdir/formslib.php");
 require_once('lib.php');
+require_once($CFG->dirroot . '/local/apprenticeoffjob/locallib.php');
 
 class offjobhours extends moodleform {
 	public function definition() {
@@ -10,10 +11,10 @@ class offjobhours extends moodleform {
 		$mform = $this->_form;
 
     $student = get_student($this->_customdata['studentid']);
-    $studentdata = get_student_data($student->id);
+    $targethours = get_target_hours($student->id);
 		$activities = get_current_activities();
 
-		foreach($studentdata as $student=>$value){
+		foreach($targethours as $student=>$value){
 			$studentdetails = $value->firstname . ' ' . $value->lastname;
 		}
 		$mform->addElement('html', '<h3>' . $studentdetails. '</h3><br />');
@@ -31,7 +32,7 @@ class offjobhours extends moodleform {
     $this->add_action_buttons();
 		$formdata = array();
 
-		foreach($studentdata as $s => $d){
+		foreach($targethours as $s => $d){
 			$formdata['activity_'. $d->activityid] = $d->hours;
 			$this->set_data($formdata);
 		}

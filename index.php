@@ -45,10 +45,18 @@ require_capability('report/apprenticeoffjob:view', $coursecontext);
 $PAGE->set_title($course->shortname .': '. get_string('pluginname' , 'report_apprenticeoffjob'));
 $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 
+// Trigger a log viewed event.
+$event = \report_apprenticeoffjob\event\report_viewed::create(array(
+            'context' =>  $coursecontext,
+            'userid' => $USER->id
+          ));
+$event->trigger();
+
 // Displaying the page.
 echo $OUTPUT->header();
 if(has_capability('report/apprenticeoffjob:view', $coursecontext)){
-  $table = display_table($course->id);
+  echo get_string('userhelp', 'report_apprenticeoffjob');
+  $table = display_table($course->id, $coursecontext);
   echo html_writer::table($table);
 }
 

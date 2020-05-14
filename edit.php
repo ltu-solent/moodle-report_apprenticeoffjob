@@ -58,6 +58,16 @@ if ($hoursform->is_cancelled()) {
   $savehours = save_hours($formdata);
   $data = file_postupdate_standard_filemanager($data, 'apprenticeoffjob',
           $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0);
+
+  // Trigger a log viewed event.
+  $coursecontext = context_course::instance($COURSE->id);
+  $event = \report_apprenticeoffjob\event\hours_edited::create(array(
+              'context' =>  $coursecontext,
+              'userid' => $USER->id,
+              'relateduserid'=>$studentid
+            ));
+  $event->trigger();
+
   redirect(new moodle_url('/report/apprenticeoffjob/index.php', ['courseid'=>$courseid]), get_string('hourssaved', 'report_apprenticeoffjob'), 15);
 }
 

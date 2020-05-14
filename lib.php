@@ -1,4 +1,6 @@
 <?php
+require_once(dirname(__FILE__).'/../../local/apprenticeoffjob/locallib.php');
+
 function report_apprenticeoffjob_extend_navigation_course($navigation, $course, $context) {
     if (has_capability('report/apprenticeoffjob:view', $context)) {
         $url = new moodle_url('/report/apprenticeoffjob/index.php', array('id'=>$course->id));
@@ -20,7 +22,7 @@ function get_students($courseid){
   return $students;
 }
 
-function get_student_data($students){
+function get_target_hours($students){
   global $DB;
   // Get all the data held for specified student ids
   if(count($students) != 1){
@@ -37,7 +39,7 @@ function get_student_data($students){
              WHERE u.id $inorequalsql ";
 
 
-    $studentdata = $DB->get_records_sql($sql, $params);
+    $targethours = $DB->get_records_sql($sql, $params);
 
   }else{
 
@@ -49,14 +51,14 @@ function get_student_data($students){
       $studentid = $students;
     }
 
-    $studentdata = $DB->get_records_sql('SELECT RAND() id, u.id userid, u.firstname, u.lastname,
+    $targethours = $DB->get_records_sql('SELECT RAND() id, u.id userid, u.firstname, u.lastname,
                                          ra.studentid, ra.staffid, ra.activityid, ra.hours
                                          FROM {user} u
                                          LEFT JOIN {report_apprentice} ra ON ra.studentid = u.id
                                          WHERE u.id = ? ', array($studentid));
   }
 
-  return $studentdata;
+  return $targethours;
 }
 
 function get_current_activities(){
@@ -109,20 +111,20 @@ function save_hours($formdata){
   }
 }
 
-function display_table($course){
+function display_table($course, $coursecontext){
   global $USER;
   // Should I be using current activities or activities used for the students?
   $activities = get_current_activities();
   $students = get_students($course);
-  $studentdata = get_student_data($students);
+  $targethours = get_target_hours($students);
 
   $headings = array();
-  $headings[] = 'Student';
+  $headings[] = get_string('tableheaderstudent', 'report_apprenticeoffjob');
   foreach($activities as $activity=>$a){
     $headings[] = $a->activityname;
   }
-  $headings[] = 'Total / Completed';
-  $headings[] = 'Commitment Statement';
+  $headings[] = get_string('tableheaderhours', 'report_apprenticeoffjob');
+  $headings[] = get_string('tableheadercommitment', 'report_apprenticeoffjob');
   $headings[] = '';
   $table = new html_table();
 	$table->attributes['class'] = 'generaltable boxaligncenter';
@@ -132,21 +134,42 @@ function display_table($course){
 
   //Student data
   foreach($students as $st=>$v){
+    $totalhours = 0;
+    $completedhours = 0;
+    $studentdata = get_user_activities($v->id);
+
     $row = new html_table_row();
     $cells = array();
+
+    // Link to individual user log
     $params = ['id'=> $v->id, 'user'=>$USER->id, 'course'=>$course];
     $url = new moodle_url('/local/apprenticeoffjob/index.php', $params);
     $log = html_writer::start_tag('a', array('href'=>$url));
     $log .= $v->firstname . ' ' . $v->lastname;
     $log .= html_writer::end_tag('a');
-    $cells[] = new html_table_cell($log);
+    $cell = new html_table_cell($log);
+    $cell->attributes['class'] = 'nowrap';
+    $cells[] = $cell;
+
+    foreach($studentdata as $data=>$d){
+       $completedhours = $completedhours + $d->activityhours;
+    }
 
     foreach($activities as $activity=>$a){
-      $cell = new html_table_cell(match_activity($activity, $st, $studentdata));
+      $activityhours = match_activity($activity, $st, $targethours);
+      $totalhours = $totalhours + $activityhours;
+      $cell = new html_table_cell($activityhours);
       $cell->id = $activity;
       $cells[] = $cell;
     }
-    $cells[] = '';
+    $cells[] = $completedhours . '/' . $totalhours;
+    $usercontext = context_user::instance($v->id);
+    $filename = get_filename($usercontext->id);
+    if($filename){
+      $cells[] = '<i class="icon fa fa-check text-success fa-fw " aria-hidden="true"></i>';
+    }else{
+      $cells[] = '<i class="icon fa fa-times text-danger fa-fw " aria-hidden="true"></i>';
+    }
     $cells[] = '';
     $params = ['studentid'=> $v->id, 'courseid'=> $course];
     $editurl = new moodle_url('/report/apprenticeoffjob/edit.php', $params);
@@ -154,6 +177,7 @@ function display_table($course){
     $editbutton .= get_string('reportedithours', 'report_apprenticeoffjob');
     $editbutton .= html_writer::end_tag('a');
     $cells[] = new html_table_cell($editbutton);
+
     $row->cells = $cells;
     $table->data[] = $row;
   }
@@ -161,8 +185,8 @@ function display_table($course){
   return $table;
 }
 
-function match_activity($activity, $student, $studentdata){
-  foreach($studentdata as $s=>$d){
+function match_activity($activity, $student, $targethours){
+  foreach($targethours as $s=>$d){
     if($d->userid == $student && $d->activityid == $activity){
       return $d->hours;
     }
