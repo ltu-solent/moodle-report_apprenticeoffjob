@@ -53,7 +53,7 @@ class hours_edited extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id ".$this->userid." edited the hours for user with id ". $this->relateduserid .".";
+        return "The user with id ".$this->userid." updated the target hours for user with id ". $this->relateduserid .".";
     }
 
     /**
@@ -62,7 +62,7 @@ class hours_edited extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('hoursedited', 'report_apprenticeoffjob');
+        return get_string('hoursupdated', 'report_apprenticeoffjob');
     }
 
     /**
