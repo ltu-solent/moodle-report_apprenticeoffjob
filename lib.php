@@ -25,7 +25,7 @@ function get_students($courseid){
 function get_target_hours($students){
   global $DB;
   // Get all the data held for specified student ids
-  if(count($students) != 1){
+  if(is_array($students)){
     $studentids = [];
     foreach($students as $k => $v){
       $studentids[] = $v->id;
@@ -41,23 +41,14 @@ function get_target_hours($students){
 
     $targethours = $DB->get_records_sql($sql, $params);
 
-  }else{
-
-    if(is_array($students)){
-      foreach($students as $student=>$s){
-        $studentid = $s->id;
-      }
-    }else{
-      $studentid = $students;
-    }
+   }else{
 
     $targethours = $DB->get_records_sql('SELECT RAND() id, u.id userid, u.firstname, u.lastname,
                                          ra.studentid, ra.staffid, ra.activityid, ra.hours
                                          FROM {user} u
                                          LEFT JOIN {report_apprentice} ra ON ra.studentid = u.id
-                                         WHERE u.id = ? ', array($studentid));
+                                         WHERE u.id = ? ', array($students));
   }
-
   return $targethours;
 }
 
@@ -135,8 +126,9 @@ function display_table($course, $coursecontext){
   //Student data
   foreach($students as $st=>$v){
     $totalhours = 0;
-    $completedhours = 0;
-    $studentdata = get_user_activities($v->id);
+	$expectedhours = get_expected_hours($v->id);
+	$actualhours = get_actual_hours($v->id);
+    $studentdata = get_user_activities($v->id, $expectedhours);
 
     $row = new html_table_row();
     $cells = array();
@@ -151,18 +143,13 @@ function display_table($course, $coursecontext){
     $cell->attributes['class'] = 'nowrap';
     $cells[] = $cell;
 
-    foreach($studentdata as $data=>$d){
-       $completedhours = $completedhours + $d->activityhours;
-    }
-
     foreach($activities as $activity=>$a){
       $activityhours = match_activity($activity, $st, $targethours);
-      $totalhours = $totalhours + $activityhours;
       $cell = new html_table_cell($activityhours);
       $cell->id = $activity;
       $cells[] = $cell;
     }
-    $cells[] = $completedhours . '/' . $totalhours;
+    $cells[] = $actualhours['totalhours'] . '/' . $expectedhours['totalhours'];
     $usercontext = context_user::instance($v->id);
     $filename = get_filename($usercontext->id);
     if($filename){
