@@ -126,9 +126,9 @@ function display_table($course, $coursecontext){
   //Student data
   foreach($students as $st=>$v){
     $totalhours = 0;
-	[$expectedhoursbyactivity, $totalexpectedhours] = get_expected_hours($v->id);
-	[$actualhours, $totalactualhours] = get_actual_hours($v->id);
-    $studentdata = get_user_activities($v->id, $expectedhoursbyactivity);
+	[$expectedhoursbyactivity, $totalexpectedhours] = \local_apprenticeoffjob\api::get_expected_hours($v->id);
+	[$actualhours, $totalactualhours] = \local_apprenticeoffjob\api::get_actual_hours($v->id);
+    $studentdata = \local_apprenticeoffjob\api::get_user_activities($v->id, $expectedhoursbyactivity);
 
     $row = new html_table_row();
     $cells = array();
@@ -151,7 +151,7 @@ function display_table($course, $coursecontext){
     }
     $cells[] = $totalactualhours . '/' . $totalexpectedhours;
     $usercontext = context_user::instance($v->id);
-    $filename = get_filename($usercontext->id);
+    $filename = \local_apprenticeoffjob\api::get_filename($usercontext->id);
     if($filename){
       $cells[] = '<i class="icon fa fa-check text-success fa-fw " aria-hidden="true"></i>';
     }else{
