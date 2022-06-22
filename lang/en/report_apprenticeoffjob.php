@@ -1,4 +1,6 @@
 <?php
+
+$string['actions'] = 'Actions';
 $string['apprenticeoffjob:view'] = 'View apprenticeship report';
 $string['errnumeric']='You must enter a number here.';
 $string['hoursupdated'] = 'Hours updated';

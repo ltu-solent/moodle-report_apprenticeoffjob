@@ -24,13 +24,11 @@
  */
 
 require_once(dirname(__FILE__) . '/../../config.php');
-require_once('form.php');
-global $COURSE;
 
 $studentid = required_param('studentid', PARAM_INT);
 $courseid = required_param('courseid', PARAM_INT);
 
-$PAGE->set_url('/report/apprenticeoffjob/edit.php', array('studentid'=>$studentid));
+$PAGE->set_url('/report/apprenticeoffjob/edit.php', array('studentid' => $studentid, 'courseid' => $courseid));
 $PAGE->set_pagelayout('report');
 
 require_login($courseid);
@@ -42,8 +40,7 @@ require_capability('report/apprenticeoffjob:view', $coursecontext);
 $PAGE->set_title($COURSE->shortname .': '. get_string('pluginname' , 'report_apprenticeoffjob'));
 $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 
-// Displaying the page.
-echo $OUTPUT->header();
+
 
 $fileoptions = array('maxbytes' => 41943040, 'maxfiles' => 1);
 $data = new stdClass();
@@ -51,11 +48,14 @@ $data = file_prepare_standard_filemanager($data, 'apprenticeoffjob',
         $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0); // 0 is the item id.
 
 
-$hoursform = new offjobhours(null, array('studentid' => $studentid, 'courseid' => $courseid, 'fileoptions'=>$fileoptions));
+$hoursform = new \report_apprenticeoffjob\forms\offjobhours(null, array(
+  'studentid' => $studentid,
+  'courseid' => $courseid,
+  'fileoptions' => $fileoptions));
 if ($hoursform->is_cancelled()) {
   redirect($CFG->wwwroot . '/report/apprenticeoffjob/index.php?id=' . $courseid);
 } else if ($formdata = $hoursform->get_data()) {
-  $savehours = save_hours($formdata);
+  $savehours = \report_apprenticeoffjob\api::save_hours($formdata);
   $data = file_postupdate_standard_filemanager($data, 'apprenticeoffjob',
           $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0);
 
@@ -68,10 +68,16 @@ if ($hoursform->is_cancelled()) {
             ));
   $event->trigger();
 
-  redirect(new moodle_url('/report/apprenticeoffjob/index.php', ['courseid'=>$courseid]), get_string('hourssaved', 'report_apprenticeoffjob'), 15);
+  redirect(new moodle_url('/report/apprenticeoffjob/index.php', [
+    'courseid' => $courseid
+  ]), get_string('hourssaved', 'report_apprenticeoffjob'), 15);
 }
 
 $hoursform->set_data($data);
+
+// Displaying the page.
+echo $OUTPUT->header();
+
 $hoursform->display();
 
 echo $OUTPUT->footer();

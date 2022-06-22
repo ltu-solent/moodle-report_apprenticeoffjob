@@ -24,7 +24,6 @@
  */
 
 require_once(dirname(__FILE__) . '/../../config.php');
-require_once('form.php');
 
 $id = optional_param('id', '', PARAM_INT);
 $courseid = optional_param('courseid', '', PARAM_INT);
@@ -56,8 +55,10 @@ $event->trigger();
 echo $OUTPUT->header();
 if(has_capability('report/apprenticeoffjob:view', $coursecontext)){
   echo get_string('userhelp', 'report_apprenticeoffjob');
-  $table = display_table($course->id, $coursecontext);
-  echo html_writer::table($table);
+  $table = new \report_apprenticeoffjob\tables\summary($course->id);
+  $table->print_table();
+  // $table = display_table($course->id, $coursecontext);
+  // echo html_writer::table($table);
 }
 
 echo $OUTPUT->footer();
