@@ -37,7 +37,7 @@ class api {
      */
     public static function get_targethours($studentids) {
         global $DB;
-        // Get all the data held for specified student ids
+        // Get all the data held for specified student ids.
         if (!is_array($studentids)) {
             $studentids = [$studentids];
         }
@@ -64,10 +64,10 @@ class api {
         global $USER, $DB;
         foreach ($formdata as $k => $v) {
             // Only interested in saving activity elements.
-            if (strpos($k, 'activity_') === false)  {
+            if (strpos($k, 'activity_') === false) {
                 continue;
             }
-            
+
             $dataobject = new stdClass();
             $dataobject->studentid = $formdata->studentid;
             $dataobject->staffid = $USER->id;
@@ -90,5 +90,4 @@ class api {
             }
         }
     }
-
 }

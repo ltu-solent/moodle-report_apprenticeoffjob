@@ -22,9 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- namespace report_apprenticeoffjob\event;
+namespace report_apprenticeoffjob\event;
 
- defined('MOODLE_INTERNAL') || die();
 
  /**
   * The report_apprenticeoffjob hours edited event class.
@@ -71,7 +70,9 @@ class hours_edited extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/report/apprenticeoffjob/edit.php', array('studentid'=>$this->relateduserid, 'courseid'=>$this->courseid));
+        return new \moodle_url('/report/apprenticeoffjob/edit.php', array(
+            'studentid' => $this->relateduserid,
+            'courseid' => $this->courseid));
     }
 
 }

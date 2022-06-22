@@ -53,24 +53,24 @@ $hoursform = new \report_apprenticeoffjob\forms\offjobhours(null, array(
   'courseid' => $courseid,
   'fileoptions' => $fileoptions));
 if ($hoursform->is_cancelled()) {
-  redirect($CFG->wwwroot . '/report/apprenticeoffjob/index.php?id=' . $courseid);
+    redirect($CFG->wwwroot . '/report/apprenticeoffjob/index.php?id=' . $courseid);
 } else if ($formdata = $hoursform->get_data()) {
-  $savehours = \report_apprenticeoffjob\api::save_hours($formdata);
-  $data = file_postupdate_standard_filemanager($data, 'apprenticeoffjob',
-          $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0);
+    $savehours = \report_apprenticeoffjob\api::save_hours($formdata);
+    $data = file_postupdate_standard_filemanager($data, 'apprenticeoffjob',
+            $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0);
 
-  // Trigger a log viewed event.
-  $coursecontext = context_course::instance($COURSE->id);
-  $event = \report_apprenticeoffjob\event\hours_edited::create(array(
-              'context' =>  $coursecontext,
-              'userid' => $USER->id,
-              'relateduserid'=>$studentid
-            ));
-  $event->trigger();
+    // Trigger a log viewed event.
+    $coursecontext = context_course::instance($COURSE->id);
+    $event = \report_apprenticeoffjob\event\hours_edited::create(array(
+                'context' => $coursecontext,
+                'userid' => $USER->id,
+                'relateduserid' => $studentid
+                ));
+    $event->trigger();
 
-  redirect(new moodle_url('/report/apprenticeoffjob/index.php', [
-    'courseid' => $courseid
-  ]), get_string('hourssaved', 'report_apprenticeoffjob'), 15);
+    redirect(new moodle_url('/report/apprenticeoffjob/index.php', [
+        'courseid' => $courseid
+    ]), get_string('hourssaved', 'report_apprenticeoffjob'), 15);
 }
 
 $hoursform->set_data($data);

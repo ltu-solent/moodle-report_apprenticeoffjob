@@ -31,7 +31,7 @@ $id = ($id ? $id : $courseid);
 
 $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 
-$PAGE->set_url('/report/apprenticeoffjob/index.php', array('id'=>$id));
+$PAGE->set_url('/report/apprenticeoffjob/index.php', array('id' => $id));
 $PAGE->set_pagelayout('report');
 
 require_login($course);
@@ -46,19 +46,16 @@ $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 
 // Trigger a log viewed event.
 $event = \report_apprenticeoffjob\event\report_viewed::create(array(
-            'context' =>  $coursecontext,
+            'context' => $coursecontext,
             'userid' => $USER->id
           ));
 $event->trigger();
 
 // Displaying the page.
 echo $OUTPUT->header();
-if(has_capability('report/apprenticeoffjob:view', $coursecontext)){
-  echo get_string('userhelp', 'report_apprenticeoffjob');
-  $table = new \report_apprenticeoffjob\tables\summary($course->id);
-  $table->print_table();
-  // $table = display_table($course->id, $coursecontext);
-  // echo html_writer::table($table);
-}
+
+echo get_string('userhelp', 'report_apprenticeoffjob');
+$table = new \report_apprenticeoffjob\tables\summary($course->id);
+$table->print_table();
 
 echo $OUTPUT->footer();

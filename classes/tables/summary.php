@@ -66,15 +66,14 @@ class summary {
     }
 
     private function assemble() {
-        //Student data
-        foreach ($this->students as $id => $student) {
+        foreach ($this->students as $student) {
             [$expectedhoursbyactivity, $totalexpectedhours] = \local_apprenticeoffjob\api::get_expected_hours($student->id);
             [$actualhours, $totalactualhours] = \local_apprenticeoffjob\api::get_actual_hours($student->id);
             $rag = '';
             $row = new html_table_row();
             $cells = array();
 
-            // Link to individual user log
+            // Link to individual user log.
             $params = ['id' => $student->id, 'course' => $this->courseid];
             $log = html_writer::link(
                 new moodle_url('/local/apprenticeoffjob/index.php', $params),

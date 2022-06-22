@@ -22,9 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- namespace report_apprenticeoffjob\event;
+namespace report_apprenticeoffjob\event;
 
- defined('MOODLE_INTERNAL') || die();
 
  /**
   * The report_viewed event class.
@@ -71,7 +70,7 @@ class report_viewed extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/report/apprenticeoffjob/index.php', array('id'=>$this->courseid));
+        return new \moodle_url('/report/apprenticeoffjob/index.php', array('id' => $this->courseid));
     }
 
 }

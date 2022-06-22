@@ -25,55 +25,53 @@
 
 namespace report_apprenticeoffjob\forms;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once("$CFG->libdir/formslib.php");
 
 use core_user;
 use moodleform;
 
 class offjobhours extends moodleform {
-	public function definition() {
-		global $USER, $DB, $CFG, $OUTPUT;
+    public function definition() {
+        $mform = $this->_form;
 
-		$mform = $this->_form;
+        $student = core_user::get_user($this->_customdata['studentid']);
+        $targethours = \report_apprenticeoffjob\api::get_targethours([$student->id]);
+        $activities = \local_apprenticeoffjob\api::get_activitytypes();
+        $studentdetails = fullname($student);
+        $mform->addElement('html', '<h3>Set target hours for ' . $studentdetails. '</h3><br />');
+        foreach ($activities as $a) {
+            $mform->addElement('text', 'activity_' . $a->id, $a->activityname);
+            $mform->setType('activity_' . $a->id, PARAM_TEXT);
+            $mform->addRule('activity_' . $a->id,
+                get_string('errnumeric', 'report_apprenticeoffjob'),
+                'numeric', null, 'client', 1, 0);
+        }
+        $mform->addElement('filemanager', 'apprenticeoffjob_filemanager', 'Commitment statement',
+            null, $this->_customdata['fileoptions']);
+        $mform->addElement('hidden', 'studentid', $this->_customdata['studentid']);
+        $mform->setType('studentid', PARAM_INT);
+        $mform->addElement('hidden', 'courseid', $this->_customdata['courseid']);
+        $mform->setType('courseid', PARAM_INT);
+        $this->add_action_buttons();
+        $formdata = array();
+        foreach ($targethours as $s => $d) {
+            $formdata['activity_'. $d->activityid] = $d->hours;
+            $this->set_data($formdata);
+        }
+    }
 
-		$student = core_user::get_user($this->_customdata['studentid']);
-		$targethours = \report_apprenticeoffjob\api::get_targethours([$student->id]);
-		$activities = \local_apprenticeoffjob\api::get_activitytypes();
-		$studentdetails = fullname($student);
-		
-		$mform->addElement('html', '<h3>Set target hours for ' . $studentdetails. '</h3><br />');
-		foreach($activities as $activity=>$a){
-			$mform->addElement('text', 'activity_'.$a->id, $a->activityname);
-	    	$mform->setType('activity_'.$a->id, PARAM_RAW);
-			$mform->addRule('activity_'.$a->id, get_string('errnumeric', 'report_apprenticeoffjob'), 'numeric', null, 'server', 1, 0);
-		}
-		$mform->addElement('filemanager', 'apprenticeoffjob_filemanager', 'Commitment statement', null, $this->_customdata['fileoptions']);
-
-		$mform->addElement('hidden', 'studentid', $this->_customdata['studentid']);
-		$mform->setType('studentid', PARAM_INT);
-		$mform->addElement('hidden', 'courseid', $this->_customdata['courseid']);
-		$mform->setType('courseid', PARAM_INT);
-		$this->add_action_buttons();
-		$formdata = array();
-
-		foreach($targethours as $s => $d){
-			$formdata['activity_'. $d->activityid] = $d->hours;
-			$this->set_data($formdata);
-		}
-	}
-
-	public function validation($data, $files) {
-			$errors = parent::validation($data, $files);
-
-			foreach($data as $k=>$v){
-				if(strpos($k, 'activity_') !== false){
-					if(floor($v) != $v){
-						$errors[$k] = get_string('errnumeric', 'report_apprenticeoffjob');
-					}
-				}
-			}
-
-      return $errors;
-  }
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        foreach ($data as $k => $v) {
+            if (strpos($k, 'activity_') !== false) {
+                if (floor($v) != $v) {
+                    $errors[$k] = get_string('errnumeric', 'report_apprenticeoffjob');
+                }
+            }
+        }
+        return $errors;
+    }
 }
 
