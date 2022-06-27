@@ -99,9 +99,11 @@ class summary {
             if ($totalactualhours == 0 && $totalexpectedhours > 0) {
                 $rag = 'table-danger';
             } else if ($totalactualhours < $totalexpectedhours && $totalexpectedhours > 0) {
-                $rag = 'table-warning';
+                // $rag = 'table-warning';
             } else if ($totalactualhours >= $totalexpectedhours && $totalexpectedhours > 0) {
                 $rag = 'table-success';
+            } else {
+                // $rag = 'table-warning';
             }
             $cells[] = $totalactualhours . ' / ' . $totalexpectedhours;
             $usercontext = context_user::instance($student->id);
