@@ -17,13 +17,20 @@
 /**
  * Lib file
  *
- * @package   block_package
+ * @package   report_apprenticeoffjob
  * @author    Mark Sharp <mark.sharp@solent.ac.uk>
  * @copyright 2022 Solent University {@link https://www.solent.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use report_apprenticeoffjob\api;
 
+/**
+ * Add apprentice off job to course navigation
+ *
+ * @param navigation_node $navigation
+ * @param stdClass $course
+ * @param context $context
+ * @return void
+ */
 function report_apprenticeoffjob_extend_navigation_course($navigation, $course, $context) {
     if (has_capability('report/apprenticeoffjob:view', $context)) {
         $url = new moodle_url('/report/apprenticeoffjob/index.php', array('id' => $course->id));
@@ -33,6 +40,18 @@ function report_apprenticeoffjob_extend_navigation_course($navigation, $course, 
     }
 }
 
+/**
+ * Plugin function for uploaded file.
+ *
+ * @param stdClass $course The course object.
+ * @param stdClass $cm The cm object.
+ * @param context $context The context object.
+ * @param string $filearea The file area.
+ * @param array $args List of arguments.
+ * @param bool $forcedownload Whether or not to force the download of the file.
+ * @param array $options Array of options.
+ * @return void|false
+ */
 function report_apprenticeoffjob_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
 
     if ($context->contextlevel != CONTEXT_USER) {

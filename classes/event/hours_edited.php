@@ -33,7 +33,6 @@ namespace report_apprenticeoffjob\event;
   * @copyright  2020 onwards Solent University
   * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
   */
-
 class hours_edited extends \core\event\base {
 
     /**

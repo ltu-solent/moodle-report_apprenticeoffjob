@@ -34,15 +34,53 @@ use html_writer;
 use moodle_url;
 use report_apprenticeoffjob\api as report_api;
 
+/**
+ * Summary table for course
+ */
 class summary {
 
+    /**
+     * Activity types
+     *
+     * @var array
+     */
     private $activities = [];
+    /**
+     * Students enrolled on course
+     *
+     * @var array
+     */
     private $students = [];
+    /**
+     * Target hours. Not used.
+     *
+     * @var array
+     */
     private $targethours = [];
+    /**
+     * The table being created
+     *
+     * @var html_table
+     */
     private $table;
+    /**
+     * Course context
+     *
+     * @var context_course
+     */
     private $coursecontext;
+    /**
+     * Courseid
+     *
+     * @var int
+     */
     private $courseid;
 
+    /**
+     * Table constructor
+     *
+     * @param int $courseid
+     */
     public function __construct($courseid) {
         $this->coursecontext = context_course::instance($courseid);
         $this->courseid = $courseid;
@@ -65,6 +103,11 @@ class summary {
         $this->assemble();
     }
 
+    /**
+     * Assemble the table
+     *
+     * @return void
+     */
     private function assemble() {
         foreach ($this->students as $student) {
             [$expectedhoursbyactivity, $totalexpectedhours] = \local_apprenticeoffjob\api::get_expected_hours($student->id);
@@ -99,11 +142,11 @@ class summary {
             if ($totalactualhours == 0 && $totalexpectedhours > 0) {
                 $rag = 'table-danger';
             } else if ($totalactualhours < $totalexpectedhours && $totalexpectedhours > 0) {
-                // $rag = 'table-warning';
+                $rag = ''; // Was table-warning.
             } else if ($totalactualhours >= $totalexpectedhours && $totalexpectedhours > 0) {
                 $rag = 'table-success';
             } else {
-                // $rag = 'table-warning';
+                $rag = ''; // Was table-warning.
             }
             $cells[] = $totalactualhours . ' / ' . $totalexpectedhours;
             $usercontext = context_user::instance($student->id);

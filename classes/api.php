@@ -27,6 +27,9 @@ namespace report_apprenticeoffjob;
 
 use stdClass;
 
+/**
+ * Helper class
+ */
 class api {
 
     /**

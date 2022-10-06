@@ -32,7 +32,15 @@ require_once("$CFG->libdir/formslib.php");
 use core_user;
 use moodleform;
 
+/**
+ * Offjob hours teacher's form
+ */
 class offjobhours extends moodleform {
+    /**
+     * Form definition
+     *
+     * @return void
+     */
     public function definition() {
         $mform = $this->_form;
 
@@ -62,6 +70,13 @@ class offjobhours extends moodleform {
         }
     }
 
+    /**
+     * Form validation
+     *
+     * @param array $data
+     * @param array $files
+     * @return array Errors
+     */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         foreach ($data as $k => $v) {
@@ -74,4 +89,3 @@ class offjobhours extends moodleform {
         return $errors;
     }
 }
-

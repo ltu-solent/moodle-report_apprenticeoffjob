@@ -17,7 +17,7 @@
 /**
  * Student data entry point for apprentice off job hours
  *
- * @package    local_apprenticeoffjob
+ * @package    report_apprenticeoffjob
  * @copyright  2020 onwards Solent University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,7 +33,6 @@ namespace report_apprenticeoffjob\event;
   * @copyright  2020 onwards Solent University
   * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
   */
-
 class report_viewed extends \core\event\base {
 
     /**
