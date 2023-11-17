@@ -25,10 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-
 $plugin->version  = 2021041400;
 $plugin->requires = 2018120304;
 $plugin->component = 'report_apprenticeoffjob';
-$plugin->dependencies = array(
-    'local_apprenticeoffjob' => 2021041400,   // The Foo activity must be present (any version).
-);
+$plugin->dependencies = [
+    'local_apprenticeoffjob' => 2021041400,
+];

@@ -69,9 +69,10 @@ class hours_edited extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/report/apprenticeoffjob/edit.php', array(
+        return new \moodle_url('/report/apprenticeoffjob/edit.php', [
             'studentid' => $this->relateduserid,
-            'courseid' => $this->courseid));
+            'courseid' => $this->courseid,
+            ]
+        );
     }
-
 }

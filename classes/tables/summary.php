@@ -88,7 +88,7 @@ class summary {
         $this->students = get_role_users(5, $this->coursecontext);
         $this->targethours = report_api::get_targethours(array_keys($this->students));
 
-        $headings = array();
+        $headings = [];
         $headings[] = get_string('tableheaderstudent', 'report_apprenticeoffjob');
         foreach ($this->activities as $a) {
             $headings[] = $a->activityname;
@@ -114,7 +114,7 @@ class summary {
             [$actualhours, $totalactualhours] = \local_apprenticeoffjob\api::get_actual_hours($student->id);
             $rag = '';
             $row = new html_table_row();
-            $cells = array();
+            $cells = [];
 
             // Link to individual user log.
             $params = ['id' => $student->id, 'course' => $this->courseid];
@@ -161,7 +161,7 @@ class summary {
                 new moodle_url('/report/apprenticeoffjob/edit.php', $params),
                 get_string('reportedithours', 'report_apprenticeoffjob'),
                 [
-                    'class' => 'btn btn-secondary'
+                    'class' => 'btn btn-secondary',
                 ]
             );
             $cells[] = new html_table_cell($editbutton);

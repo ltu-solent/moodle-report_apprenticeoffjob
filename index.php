@@ -28,9 +28,9 @@ $id = optional_param('id', '', PARAM_INT);
 $courseid = optional_param('courseid', '', PARAM_INT);
 $id = ($id ? $id : $courseid);
 
-$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
-$PAGE->set_url('/report/apprenticeoffjob/index.php', array('id' => $id));
+$PAGE->set_url('/report/apprenticeoffjob/index.php', ['id' => $id]);
 $PAGE->set_pagelayout('report');
 
 require_login($course);
@@ -44,10 +44,10 @@ $PAGE->set_title($course->shortname .': '. get_string('pluginname' , 'report_app
 $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 
 // Trigger a log viewed event.
-$event = \report_apprenticeoffjob\event\report_viewed::create(array(
+$event = \report_apprenticeoffjob\event\report_viewed::create([
             'context' => $coursecontext,
-            'userid' => $USER->id
-          ));
+            'userid' => $USER->id,
+          ]);
 $event->trigger();
 
 // Displaying the page.

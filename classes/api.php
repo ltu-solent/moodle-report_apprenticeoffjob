@@ -80,7 +80,7 @@ class api {
 
             $id = $DB->get_record('report_apprentice', [
                 'studentid' => $dataobject->studentid,
-                'activityid' => $dataobject->activityid
+                'activityid' => $dataobject->activityid,
             ]);
             if (!$id) {
                 $dataobject->timecreated = time();

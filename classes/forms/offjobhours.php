@@ -63,7 +63,7 @@ class offjobhours extends moodleform {
         $mform->addElement('hidden', 'courseid', $this->_customdata['courseid']);
         $mform->setType('courseid', PARAM_INT);
         $this->add_action_buttons();
-        $formdata = array();
+        $formdata = [];
         foreach ($targethours as $s => $d) {
             $formdata['activity_'. $d->activityid] = $d->hours;
             $this->set_data($formdata);

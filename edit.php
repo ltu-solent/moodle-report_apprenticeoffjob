@@ -27,7 +27,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 $studentid = required_param('studentid', PARAM_INT);
 $courseid = required_param('courseid', PARAM_INT);
 
-$PAGE->set_url('/report/apprenticeoffjob/edit.php', array('studentid' => $studentid, 'courseid' => $courseid));
+$PAGE->set_url('/report/apprenticeoffjob/edit.php', ['studentid' => $studentid, 'courseid' => $courseid]);
 $PAGE->set_pagelayout('report');
 
 require_login($courseid);
@@ -41,16 +41,17 @@ $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 
 
 
-$fileoptions = array('maxbytes' => 41943040, 'maxfiles' => 1);
+$fileoptions = ['maxbytes' => 41943040, 'maxfiles' => 1];
 $data = new stdClass();
 $data = file_prepare_standard_filemanager($data, 'apprenticeoffjob',
         $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0); // 0 is the item id.
 
 
-$hoursform = new \report_apprenticeoffjob\forms\offjobhours(null, array(
-  'studentid' => $studentid,
-  'courseid' => $courseid,
-  'fileoptions' => $fileoptions));
+$hoursform = new \report_apprenticeoffjob\forms\offjobhours(null, [
+        'studentid' => $studentid,
+        'courseid' => $courseid,
+        'fileoptions' => $fileoptions,
+    ]);
 if ($hoursform->is_cancelled()) {
     redirect($CFG->wwwroot . '/report/apprenticeoffjob/index.php?id=' . $courseid);
 } else if ($formdata = $hoursform->get_data()) {
@@ -60,15 +61,16 @@ if ($hoursform->is_cancelled()) {
 
     // Trigger a log viewed event.
     $coursecontext = context_course::instance($COURSE->id);
-    $event = \report_apprenticeoffjob\event\hours_edited::create(array(
+    $event = \report_apprenticeoffjob\event\hours_edited::create([
                 'context' => $coursecontext,
                 'userid' => $USER->id,
-                'relateduserid' => $studentid
-                ));
+                'relateduserid' => $studentid,
+            ]
+        );
     $event->trigger();
 
     redirect(new moodle_url('/report/apprenticeoffjob/index.php', [
-        'courseid' => $courseid
+        'courseid' => $courseid,
     ]), get_string('hourssaved', 'report_apprenticeoffjob'), 15);
 }
 

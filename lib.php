@@ -33,7 +33,7 @@
  */
 function report_apprenticeoffjob_extend_navigation_course($navigation, $course, $context) {
     if (has_capability('report/apprenticeoffjob:view', $context)) {
-        $url = new moodle_url('/report/apprenticeoffjob/index.php', array('id' => $course->id));
+        $url = new moodle_url('/report/apprenticeoffjob/index.php', ['id' => $course->id]);
         $navigation->add(
             get_string('pluginname', 'report_apprenticeoffjob'),
             $url, navigation_node::TYPE_SETTING, null, null, new pix_icon('i/report', ''));
@@ -52,7 +52,7 @@ function report_apprenticeoffjob_extend_navigation_course($navigation, $course, 
  * @param array $options Array of options.
  * @return void|false
  */
-function report_apprenticeoffjob_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function report_apprenticeoffjob_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
 
     if ($context->contextlevel != CONTEXT_USER) {
         send_file_not_found();
