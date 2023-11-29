@@ -51,7 +51,7 @@ class offjobhours extends moodleform {
         $mform->addElement('html', '<h3>Set target hours for ' . $studentdetails. '</h3><br />');
         foreach ($activities as $a) {
             $mform->addElement('text', 'activity_' . $a->id, $a->activityname);
-            $mform->setType('activity_' . $a->id, PARAM_TEXT);
+            $mform->setType('activity_' . $a->id, PARAM_INT);
             $mform->addRule('activity_' . $a->id,
                 get_string('errnumeric', 'report_apprenticeoffjob'),
                 'numeric', null, 'client', 1, 0);
@@ -81,6 +81,7 @@ class offjobhours extends moodleform {
         $errors = parent::validation($data, $files);
         foreach ($data as $k => $v) {
             if (strpos($k, 'activity_') !== false) {
+                $v = (int)$v;
                 if (floor($v) != $v) {
                     $errors[$k] = get_string('errnumeric', 'report_apprenticeoffjob');
                 }

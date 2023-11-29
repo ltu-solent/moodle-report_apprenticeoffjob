@@ -179,10 +179,15 @@ class summary {
      * @return string|void
      */
     public function print_table($echo = true) {
-        $table = html_writer::table($this->table);
-        if (!$echo) {
-            return $table;
+        $result = '';
+        if (count($this->targethours) == 0) {
+            $result = html_writer::tag('h3', get_string('nohourstodisplay', 'report_apprenticeoffjob'));
+        } else {
+            $result = html_writer::table($this->table);
         }
-        echo $table;
+        if (!$echo) {
+            return $result;
+        }
+        echo $result;
     }
 }

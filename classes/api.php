@@ -44,13 +44,16 @@ class api {
         if (!is_array($studentids)) {
             $studentids = [$studentids];
         }
+        if (empty($studentids)) {
+            return [];
+        }
         list($inorequalsql, $params) = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
         // Create a random id, as there will be multiple entries or none for a user.
         $sql = "SELECT RAND() id, u.id userid, u.firstname, u.lastname,
                 ra.studentid, ra.staffid, ra.activityid, ra.hours
                 FROM {user} u
                 LEFT JOIN {report_apprentice} ra ON ra.studentid = u.id
-                JOIN {local_apprenticeactivities} aa ON aa.id = ra.activityid
+                LEFT JOIN {local_apprenticeactivities} aa ON aa.id = ra.activityid
                 WHERE u.id $inorequalsql";
 
         $targethours = $DB->get_records_sql($sql, $params);

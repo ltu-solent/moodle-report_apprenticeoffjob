@@ -30,6 +30,7 @@ $string['apprenticeoffjob:view'] = 'View apprenticeship report';
 $string['errnumeric'] = 'You must enter a number here.';
 $string['hoursupdated'] = 'Hours updated';
 $string['hourssaved'] = 'Hours saved';
+$string['nohourstodisplay'] = 'No hours to display';
 $string['nopermission'] = 'You do not have permission to view this page.';
 $string['pluginname'] = 'Apprentice off the job hours report';
 $string['tableheaderstudent'] = 'Student';
