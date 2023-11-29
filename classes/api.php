@@ -49,7 +49,8 @@ class api {
         }
         list($inorequalsql, $params) = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
         // Create a random id, as there will be multiple entries or none for a user.
-        $sql = "SELECT RAND() id, u.id userid, u.firstname, u.lastname,
+        $random = self::db_random();
+        $sql = "SELECT {$random} idx, u.id userid, u.firstname, u.lastname,
                 ra.studentid, ra.staffid, ra.activityid, ra.hours
                 FROM {user} u
                 LEFT JOIN {report_apprentice} ra ON ra.studentid = u.id
@@ -94,6 +95,25 @@ class api {
                 $dataobject->id = $id->id;
                 $DB->update_record('report_apprentice', $dataobject);
             }
+        }
+    }
+
+    /**
+     * Return database specific random function
+     *
+     * @return string
+     */
+    private static function db_random() {
+        global $DB;
+        switch ($DB->get_dbfamily()) {
+            case 'oracle':
+                return ' dbms_random.value ';
+            case 'pgsql':
+                return ' RANDOM() ';
+            case 'mssql':
+                return ' NEWID() ';
+            default:
+                return ' RAND() ';
         }
     }
 }
