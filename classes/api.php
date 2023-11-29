@@ -108,7 +108,7 @@ class api {
         switch ($DB->get_dbfamily()) {
             case 'oracle':
                 return ' dbms_random.value ';
-            case 'pgsql':
+            case 'postgres':
                 return ' RANDOM() ';
             case 'mssql':
                 return ' NEWID() ';
