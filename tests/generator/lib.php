@@ -27,9 +27,9 @@ class report_apprenticeoffjob_generator extends component_generator_base {
      * Set target hours for a student
      *
      * @param array $formdata
-     * @return stdClas
+     * @return stdClass|false
      */
-    public function set_target_hours($formdata): stdClass {
+    public function set_target_hours($formdata) {
         global $DB;
         // Requires staff is logged in.
         if (!isset($formdata['studentid'])) {
