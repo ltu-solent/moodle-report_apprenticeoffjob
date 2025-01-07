@@ -69,6 +69,7 @@ class api_test extends advanced_testcase {
                         'activitydate' => time(),
                         'activitydetails' => "{$activitytype->activityname} {$a}",
                         'activityhours' => $x + $a,
+                        'userid' => $student->id,
                     ];
                 }
             }
