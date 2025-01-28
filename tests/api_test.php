@@ -29,7 +29,7 @@ use local_apprenticeoffjob_generator;
  * @copyright  2023 Solent University {@link https://www.solent.ac.uk}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class api_test extends advanced_testcase {
+final class api_test extends advanced_testcase {
     /**
      * Test get Target hours for student or list of students.
      * @covers \local_apprenticeoffjob\api::get_targethours

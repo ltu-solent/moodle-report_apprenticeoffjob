@@ -27,15 +27,22 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['actions'] = 'Actions';
 $string['apprenticeoffjob:view'] = 'View apprenticeship report';
+
 $string['errnumeric'] = 'You must enter a number here.';
-$string['hoursupdated'] = 'Hours updated';
+
 $string['hourssaved'] = 'Hours saved';
+$string['hoursupdated'] = 'Hours updated';
+
 $string['nohourstodisplay'] = 'No hours to display';
 $string['nopermission'] = 'You do not have permission to view this page.';
+
 $string['pluginname'] = 'Apprentice off the job hours report';
-$string['tableheaderstudent'] = 'Student';
-$string['tableheaderhours'] = 'Completed/Target';
-$string['tableheadercommitment'] = 'Commitment Statement';
-$string['userhelp'] = '<p></p>';
+
 $string['reportedithours'] = 'Edit';
 $string['reportviewed'] = 'Report viewed';
+
+$string['tableheadercommitment'] = 'Commitment Statement';
+$string['tableheaderhours'] = 'Completed/Target';
+$string['tableheaderstudent'] = 'Student';
+
+$string['userhelp'] = '<p></p>';
