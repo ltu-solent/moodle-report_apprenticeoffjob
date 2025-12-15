@@ -26,9 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version  = 2025070100;
-$plugin->requires = 2022112800;
+$plugin->requires = 2024100700;
 $plugin->component = 'report_apprenticeoffjob';
 $plugin->dependencies = [
     'local_apprenticeoffjob' => 2025010700,
 ];
-$plugin->required = [401, 405];
+$plugin->required = [405, 501];

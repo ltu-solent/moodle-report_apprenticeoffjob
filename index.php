@@ -40,7 +40,7 @@ $coursecontext = context_course::instance($course->id);
 require_capability('report/apprenticeoffjob:view', $coursecontext);
 
 // Set page title and page heading.
-$PAGE->set_title($course->shortname .': '. get_string('pluginname' , 'report_apprenticeoffjob'));
+$PAGE->set_title($course->shortname . ': ' . get_string('pluginname', 'report_apprenticeoffjob'));
 $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 
 // Trigger a log viewed event.

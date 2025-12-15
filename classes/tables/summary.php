@@ -38,7 +38,6 @@ use report_apprenticeoffjob\api as report_api;
  * Summary table for course
  */
 class summary {
-
     /**
      * Activity types
      *

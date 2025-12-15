@@ -34,7 +34,6 @@ namespace report_apprenticeoffjob\event;
   * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
   */
 class report_viewed extends \core\event\base {
-
     /**
      * Init method.
      *
@@ -71,5 +70,4 @@ class report_viewed extends \core\event\base {
     public function get_url() {
         return new \moodle_url('/report/apprenticeoffjob/index.php', ['id' => $this->courseid]);
     }
-
 }

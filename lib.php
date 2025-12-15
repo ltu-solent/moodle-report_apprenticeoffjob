@@ -36,7 +36,12 @@ function report_apprenticeoffjob_extend_navigation_course($navigation, $course, 
         $url = new moodle_url('/report/apprenticeoffjob/index.php', ['id' => $course->id]);
         $navigation->add(
             get_string('pluginname', 'report_apprenticeoffjob'),
-            $url, navigation_node::TYPE_SETTING, null, null, new pix_icon('i/report', ''));
+            $url,
+            navigation_node::TYPE_SETTING,
+            null,
+            null,
+            new pix_icon('i/report', '')
+        );
     }
 }
 

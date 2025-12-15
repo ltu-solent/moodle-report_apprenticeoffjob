@@ -36,15 +36,22 @@ require_login($courseid);
 $coursecontext = context_course::instance($courseid);
 require_capability('report/apprenticeoffjob:view', $coursecontext);
 // Set page title and page heading.
-$PAGE->set_title($COURSE->shortname .': '. get_string('pluginname' , 'report_apprenticeoffjob'));
+$PAGE->set_title($COURSE->shortname . ': ' . get_string('pluginname', 'report_apprenticeoffjob'));
 $PAGE->set_heading(get_string('pluginname', 'report_apprenticeoffjob'));
 
 
 
 $fileoptions = ['maxbytes' => 41943040, 'maxfiles' => 1];
 $data = new stdClass();
-$data = file_prepare_standard_filemanager($data, 'apprenticeoffjob',
-        $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0); // 0 is the item id.
+$data = file_prepare_standard_filemanager(
+    $data,
+    'apprenticeoffjob',
+    $fileoptions,
+    context_user::instance($studentid),
+    'report_apprenticeoffjob',
+    'apprenticeoffjob',
+    0 // 0 is the item id.
+);
 
 
 $hoursform = new \report_apprenticeoffjob\forms\offjobhours(null, [
@@ -56,17 +63,25 @@ if ($hoursform->is_cancelled()) {
     redirect($CFG->wwwroot . '/report/apprenticeoffjob/index.php?id=' . $courseid);
 } else if ($formdata = $hoursform->get_data()) {
     $savehours = \report_apprenticeoffjob\api::save_hours($formdata);
-    $data = file_postupdate_standard_filemanager($data, 'apprenticeoffjob',
-            $fileoptions, context_user::instance($studentid), 'report_apprenticeoffjob', 'apprenticeoffjob', 0);
+    $data = file_postupdate_standard_filemanager(
+        $data,
+        'apprenticeoffjob',
+        $fileoptions,
+        context_user::instance($studentid),
+        'report_apprenticeoffjob',
+        'apprenticeoffjob',
+        0
+    );
 
     // Trigger a log viewed event.
     $coursecontext = context_course::instance($COURSE->id);
-    $event = \report_apprenticeoffjob\event\hours_edited::create([
-                'context' => $coursecontext,
-                'userid' => $USER->id,
-                'relateduserid' => $studentid,
-            ]
-        );
+    $event = \report_apprenticeoffjob\event\hours_edited::create(
+        [
+            'context' => $coursecontext,
+            'userid' => $USER->id,
+            'relateduserid' => $studentid,
+        ]
+    );
     $event->trigger();
 
     redirect(new moodle_url('/report/apprenticeoffjob/index.php', [

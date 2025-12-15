@@ -31,7 +31,6 @@ use stdClass;
  * Helper class
  */
 class api {
-
     /**
      * Get target hours for each student
      *
@@ -47,7 +46,7 @@ class api {
         if (empty($studentids)) {
             return [];
         }
-        list($inorequalsql, $params) = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
+        [$inorequalsql, $params] = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
         // Create a random id, as there will be multiple entries or none for a user.
         $random = self::db_random();
         $sql = "SELECT {$random} idx, u.id userid, u.firstname, u.lastname,

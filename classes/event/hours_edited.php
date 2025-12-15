@@ -34,7 +34,6 @@ namespace report_apprenticeoffjob\event;
   * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
   */
 class hours_edited extends \core\event\base {
-
     /**
      * Init method.
      *
@@ -51,7 +50,7 @@ class hours_edited extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id ".$this->userid." updated the target hours for user with id ". $this->relateduserid .".";
+        return "The user with id " . $this->userid . " updated the target hours for user with id " . $this->relateduserid . ".";
     }
 
     /**
@@ -69,10 +68,9 @@ class hours_edited extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/report/apprenticeoffjob/edit.php', [
-            'studentid' => $this->relateduserid,
-            'courseid' => $this->courseid,
-            ]
+        return new \moodle_url(
+            '/report/apprenticeoffjob/edit.php',
+            ['studentid' => $this->relateduserid, 'courseid' => $this->courseid]
         );
     }
 }

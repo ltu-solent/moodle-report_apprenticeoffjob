@@ -48,16 +48,27 @@ class offjobhours extends moodleform {
         $targethours = \report_apprenticeoffjob\api::get_targethours([$student->id]);
         $activities = \local_apprenticeoffjob\api::get_activitytypes();
         $studentdetails = fullname($student);
-        $mform->addElement('html', '<h3>Set target hours for ' . $studentdetails. '</h3><br />');
+        $mform->addElement('html', '<h3>Set target hours for ' . $studentdetails . '</h3><br />');
         foreach ($activities as $a) {
             $mform->addElement('text', 'activity_' . $a->id, $a->activityname);
             $mform->setType('activity_' . $a->id, PARAM_INT);
-            $mform->addRule('activity_' . $a->id,
+            $mform->addRule(
+                'activity_' . $a->id,
                 get_string('errnumeric', 'report_apprenticeoffjob'),
-                'numeric', null, 'client', 1, 0);
+                'numeric',
+                null,
+                'client',
+                1,
+                0
+            );
         }
-        $mform->addElement('filemanager', 'apprenticeoffjob_filemanager', 'Commitment statement',
-            null, $this->_customdata['fileoptions']);
+        $mform->addElement(
+            'filemanager',
+            'apprenticeoffjob_filemanager',
+            'Commitment statement',
+            null,
+            $this->_customdata['fileoptions']
+        );
         $mform->addElement('hidden', 'studentid', $this->_customdata['studentid']);
         $mform->setType('studentid', PARAM_INT);
         $mform->addElement('hidden', 'courseid', $this->_customdata['courseid']);
@@ -65,7 +76,7 @@ class offjobhours extends moodleform {
         $this->add_action_buttons();
         $formdata = [];
         foreach ($targethours as $s => $d) {
-            $formdata['activity_'. $d->activityid] = $d->hours;
+            $formdata['activity_' . $d->activityid] = $d->hours;
             $this->set_data($formdata);
         }
     }
